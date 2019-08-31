@@ -10,7 +10,8 @@ object TempUtils {
         val list = mutableListOf<NewsItem>()
         var i = 0
         while(i < count) {
-            list.add(NewsItem(count.toString(), date.getDateBeforeOrAfter(i, before), "jopa", "jopa"))
+            list.add(NewsItem(count.toString(), date.getDateBeforeOrAfter(i, before), "jopa", "jopa",
+                "Abc news", "Abc news"))
             i++
         }
         return list

@@ -2,7 +2,8 @@ package com.bonial.newsapp.model
 
 import java.util.*
 
-data class NewsItem (val id: String, val date: Date, val name: String, val derscription: String, val imageUrl: String? = null) {
+data class NewsItem (val id: String, val date: Date, val name: String, val derscription: String,
+                     val imageUrl: String? = null, val provider: String) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

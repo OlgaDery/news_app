@@ -19,13 +19,11 @@ class AppModule (@NonNull val context: Context) {
         return context
     }
 
-    //TODO database provider
     @Provides
     @Singleton
     fun accessDatabaseService(): DatabaseProvider {
         return DatabaseService(context)
     }
-    //TODO retrofit provider
 
     @Provides
     @Singleton

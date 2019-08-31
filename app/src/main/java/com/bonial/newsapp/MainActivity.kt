@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.bonial.newsapp.di.*
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,7 +13,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var navController: NavController
     lateinit var navHostFragment: NavHostFragment
 
-    //TODO initializing component and subcomponent for Dagger DI
+    //TODO later replace with ApplicationContext!!!!
     private var component: AppComponent = DaggerAppComponent.builder().appModule(AppModule(this)).build()
     private var subComponent: ViewModelSubComponent = component.addComponent(ViewModelModule())
 
