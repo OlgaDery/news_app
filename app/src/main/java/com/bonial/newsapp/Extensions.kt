@@ -89,18 +89,9 @@ fun Context.getOrientation(): String {
 }
 
 fun Context.showToast(message: String) {
-    Toast.makeText(this,
-        message,
-        Toast.LENGTH_LONG).show()
+    Toast.makeText(this, message, Toast.LENGTH_LONG).show()
 }
 
-fun String?.parseUrl(): String {
-    return if (this != null && this.length > 5) {
-        this.replace("\\", "")
-    } else {
-        "no"
-    }
-}
 
 fun <T> String.deserializeJsonToList(type: Type, gson: Gson): List<T>? {
     val newToken = TypeToken.getParameterized(List::class.java, type).type

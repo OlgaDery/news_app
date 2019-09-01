@@ -26,6 +26,8 @@ class NewsFeedViewModel: ViewModel() {
 
     companion object {
         const val AMOUNT_TO_LOAD = 21
+        const val MESSAGE_NO_CONNECTION = "no connection"
+        const val MESSAGE_SERVER_SIDE_ERROR = "server side error"
     }
 
     private var _news = MutableLiveData<Pair<Int, List<NewsItem?>>>()
@@ -36,7 +38,8 @@ class NewsFeedViewModel: ViewModel() {
     val error: LiveData<Pair<Int, String>>
         get() = _error
 
-    var observableID = 0
+    var newsObservableID = 0
+    var errorObservableID = 0
 
     private val dataID: String
     get() {
@@ -49,22 +52,26 @@ class NewsFeedViewModel: ViewModel() {
 
     //TODO variable to store single value
 
-    fun getDataFromWebServer(dateFrom: Date) {
+    fun getDataFromWebServer(dateFrom: Date, before: Boolean) {
+
+        //TODO
         viewModelScope.launch(Dispatchers.IO){
-            val recentNews = apiMethods.getRecentNews(dateFrom)
+            val recentNews = apiMethods.getRecentNews()
             if (recentNews != null) {
                 loadedAmount = recentNews.size
                 if (recentNews.size < AMOUNT_TO_LOAD) {
                     allEarliestLoaded = false
                 }
                 if (news.value == null) {
-                    _news.postValue(Pair(observableID + 1, recentNews))
+                    _news.postValue(Pair(newsObservableID + 1, recentNews))
                 } else {
                     val newList = mutableListOf<NewsItem?>()
                     newList.addAll(news.value!!.second)
                     newList.addAll(recentNews)
-                    _news.postValue(Pair(observableID + 1, newList))
+                    _news.postValue(Pair(newsObservableID + 1, newList))
                 }
+            } else {
+                _error.postValue(Pair(errorObservableID + 1, MESSAGE_SERVER_SIDE_ERROR))
             }
         }
     }
@@ -74,19 +81,19 @@ class NewsFeedViewModel: ViewModel() {
             val list: List<NewsItem?>? = databaseMethods.getDataFromDatabase(dataID, NewsItem::class.java)
             if (!list.isNullOrEmpty()) {
                 loadedAmount = list.size
-                val pair = Pair(observableID + 1, list.toMutableList())
+                val pair = Pair(newsObservableID + 1, list.toMutableList())
                 _news.postValue(pair)
 
             } else {
                 if (appContext.checkNetwork() == 0) {
-                    _error.postValue(Pair(1, "NO_CONNECTION_MESSAGE"))
+                    _error.postValue(Pair(errorObservableID + 1, MESSAGE_NO_CONNECTION))
                 }
             }
         }
         if (appContext.checkNetwork() != 0) {
-            getDataFromWebServer(Date())
+            getDataFromWebServer(Date(), false)
         } else {
-            _error.postValue(Pair(1, "NO_CONNECTION_MESSAGE"))
+            _error.postValue(Pair(errorObservableID + 1, MESSAGE_NO_CONNECTION))
         }
     }
 

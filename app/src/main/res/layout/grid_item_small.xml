@@ -33,7 +33,7 @@
 
                 <TextView
                     android:id="@+id/title_text_view"
-                    android:text="@{item.name}"
+                    android:text="@{item.title}"
                     android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
 
                 <TextView
                     android:id="@+id/description_text_view"
-                    android:text="@{item.derscription}"
+                    android:text="@{item.description}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@+id/title_text_view"
@@ -50,7 +50,7 @@
 
                 <TextView
                     android:id="@+id/provider_name_text_view"
-                    android:text="@{item.provider}"
+                    android:text="@{item.author}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -58,7 +58,7 @@
 
                 <TextView
                     android:id="@+id/posted_time_view"
-                    android:text="@{item.date.toString()}"
+                    android:text="@{item.publishedAt.toString()}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toTopOf="parent"

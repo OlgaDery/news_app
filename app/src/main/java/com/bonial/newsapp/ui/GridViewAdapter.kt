@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.bonial.newsapp.NewsFeedViewModel
 import com.bonial.newsapp.R
@@ -38,8 +39,12 @@ class GridViewAdapter(val viewModel : NewsFeedViewModel): RecyclerView.Adapter<B
 
     override fun onBindViewHolder(holder: BindingViewHolder, position: Int) {
         holder.bind(items[position]!!)
+        holder.itemView.setOnClickListener {
+            Navigation.createNavigateOnClickListener(R.id.feed_fr_to_item_fr)
+
+        }
         if (position == items.size - 7 && !viewModel.allEarliestLoaded) {
-            viewModel.getDataFromWebServer((viewModel.news.value!!.second.last()!!.date))
+            viewModel.getDataFromWebServer((viewModel.news.value!!.second.last()!!.publishedAt), true)
         }
     }
 

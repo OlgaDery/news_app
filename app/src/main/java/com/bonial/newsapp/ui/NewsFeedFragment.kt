@@ -13,6 +13,7 @@ import com.bonial.newsapp.NewsFeedViewModel
 
 import com.bonial.newsapp.R
 import com.bonial.newsapp.getOrientation
+import com.bonial.newsapp.showToast
 import kotlinx.android.synthetic.main.fragment_news_feed.*
 
 class NewsFeedFragment : Fragment() {
@@ -32,8 +33,8 @@ class NewsFeedFragment : Fragment() {
                 swipe_refresh_layout.isRefreshing = false
             }
 
-            if (viewModel!!.observableID != it.first) {
-                viewModel!!.observableID = viewModel!!.observableID + 1
+            if (viewModel!!.newsObservableID != it.first) {
+                viewModel!!.newsObservableID = viewModel!!.newsObservableID + 1
                 viewModel!!.updateDatabase(it.second)
 
                 if (!recentRequested) {
@@ -45,21 +46,34 @@ class NewsFeedFragment : Fragment() {
                     //adapter?.loadItems(it.second.toMutableList())
                     //adapter?.notifyDataSetChanged()
                     //TODO show the message if all have been loaded
+                    if (viewModel!!.allEarliestLoaded) {
+                        activity!!.showToast(getString(R.string.all_news_loaded))
+                    }
                 } else {
                     //TODO add on the top
                     if (viewModel!!.loadedAmount > 0) {
                         viewModel!!.news.value!!.second.subList(0, viewModel!!.loadedAmount-1).asReversed().forEach {
-
+                            adapter!!.items.add(0, it)
+                            adapter!!.notifyItemInserted(0)
                         }
                     } else {
                         //TODO show that nothing the most recent found
+                        activity!!.showToast(getString(R.string.no_recent_data_found))
                     }
-
 
                     //TODO show the message if all have been loaded
                     recentRequested = false
                 }
 
+            }
+        })
+
+        viewModel!!.error.observe(activity!!, Observer {
+            viewModel!!.errorObservableID != it.first
+            viewModel!!.errorObservableID = viewModel!!.errorObservableID + 1
+            when (it.second) {
+                NewsFeedViewModel.MESSAGE_NO_CONNECTION -> activity!!.showToast(getString(R.string.no_internet_connection))
+                else -> activity!!.showToast(getString(R.string.server_side_error))
             }
         })
     }
@@ -107,10 +121,14 @@ class NewsFeedFragment : Fragment() {
 
         swipe_refresh_layout.setOnRefreshListener {
             recentRequested = true
-            viewModel!!.getDataFromWebServer((viewModel!!.news.value!!.second[0]!!.date))
+            viewModel!!.getDataFromWebServer((viewModel!!.news.value!!.second[0]!!.publishedAt), false)
 
         }
     }
+
+//    fun goToItemFragment() {
+//        Navigation.createNavigateOnClickListener(R.id.feed_fr_to_item_fr)
+//    }
 
 
 }

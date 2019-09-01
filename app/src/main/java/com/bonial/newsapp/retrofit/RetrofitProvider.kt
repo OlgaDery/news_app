@@ -4,5 +4,5 @@ import retrofit2.Retrofit
 
 interface RetrofitProvider {
 
-    fun getRetrofit(url: String = "http://newsapi.org"): Retrofit
+    fun getRetrofit(url: String = "https://newsapi.org/v2/top-headlines/"): Retrofit
 }
