@@ -19,7 +19,7 @@
     <fragment
         android:id="@+id/item_fragment"
         android:name="com.bonial.newsapp.ui.SingleItemFragment"
-        android:label="fragment_map"
+        android:label="fragment_item"
         tools:layout="@layout/fragment_single_item" >
     </fragment>
 

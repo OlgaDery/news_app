@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.os.Build
 import android.util.DisplayMetrics
 import android.view.View
 import android.view.WindowManager
@@ -14,6 +15,8 @@ import java.lang.reflect.Type
 import java.util.*
 import kotlin.collections.ArrayList
 
+//TODO provide context dependency for testing
+
 fun View.resetLayoutParameters(height: Int, width: Int) {
     this.layoutParams.height = height
     this.layoutParams.width = width
@@ -21,7 +24,7 @@ fun View.resetLayoutParameters(height: Int, width: Int) {
 
 fun Context.checkNetwork(): Int {
     val connectivityManager = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         val network = connectivityManager.activeNetwork
         val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return 0 //No
         if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
@@ -34,16 +37,15 @@ fun Context.checkNetwork(): Int {
         if (connectivityManager.activeNetworkInfo == null) {
             return 0
         }
-        if (connectivityManager.activeNetworkInfo.type == ConnectivityManager.TYPE_WIFI) {
+        if (connectivityManager.activeNetworkInfo.subtype == ConnectivityManager.TYPE_WIFI) {
             return 1
         }
-        if (connectivityManager.activeNetworkInfo.type == ConnectivityManager.TYPE_MOBILE) {
+        if (connectivityManager.activeNetworkInfo.subtype == ConnectivityManager.TYPE_MOBILE) {
             return 2
         }
     }
     return 0
 }
-
 
 fun Context.getWidthInches(): Int {
     val wm = this.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -61,29 +63,13 @@ fun Context.getHightInches(): Int {
     return metrics.heightPixels
 }
 
-fun Context.findScreenSize(): String {
-    val metrics = DisplayMetrics()
-    val wm = this.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-    wm.defaultDisplay.getMetrics(metrics)
-    val yInches = metrics.heightPixels / metrics.ydpi
-    val xInches = metrics.widthPixels / metrics.xdpi
-    val diagonalInches = Math.sqrt((xInches * xInches + yInches * yInches).toDouble())
-    return if (diagonalInches >= 6.5) {
-        // 6.5inch device or bigger
-        "TABLET"
-    } else {
-        // smaller device
-        "PHONE"
-    }
-}
-
 fun Context.getOrientation(): String {
     val orientation: String
     val orientationValue = this.resources.configuration.orientation
     orientation = if (orientationValue == Configuration.ORIENTATION_PORTRAIT) {
-        "PORTRAIT"
+        NewsFeedViewModel.PORTRAIT_MODE
     } else {
-        "LANDSCAPE"
+        NewsFeedViewModel.LANDSCAPE_MODE
     }
     return orientation
 }

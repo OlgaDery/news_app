@@ -7,10 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bonial.newsapp.database.DatabaseService
 import com.bonial.newsapp.model.NewsItem
+import com.bonial.newsapp.model.ObservableMessage
 import com.bonial.newsapp.retrofit.RequestNewsService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
 import javax.inject.Inject
 
 class NewsFeedViewModel: ViewModel() {
@@ -28,52 +28,64 @@ class NewsFeedViewModel: ViewModel() {
         const val AMOUNT_TO_LOAD = 21
         const val MESSAGE_NO_CONNECTION = "no connection"
         const val MESSAGE_SERVER_SIDE_ERROR = "server side error"
+        const val DATABASE_KEY = "news"
+        const val PORTRAIT_MODE = "portrait"
+        const val LANDSCAPE_MODE = "landscape"
     }
 
-    private var _news = MutableLiveData<Pair<Int, List<NewsItem?>>>()
-    val news: LiveData<Pair<Int, List<NewsItem?>>>
+    private var _news = MutableLiveData<Pair<ObservableMessage, List<NewsItem?>>>()
+    val news: LiveData<Pair<ObservableMessage, List<NewsItem?>>>
         get() = _news
 
-    private var _error = MutableLiveData<Pair<Int, String>>()
-    val error: LiveData<Pair<Int, String>>
+    val allNews = mutableListOf<NewsItem?>()
+    var selectedItem: NewsItem? = null
+
+    private var _error = MutableLiveData<Pair<ObservableMessage, String>>()
+    val error: LiveData<Pair<ObservableMessage, String>>
         get() = _error
 
-    var newsObservableID = 0
-    var errorObservableID = 0
 
     private val dataID: String
     get() {
-        return "NEWS".plus("_").plus(Date().toString())
+        return DATABASE_KEY
     }
 
     var allEarliestLoaded = false
     var loadedAmount = 0
-    val allRecentLoaded = true
 
-    //TODO variable to store single value
-
-    fun getDataFromWebServer(dateFrom: Date, before: Boolean) {
-
-        //TODO
+    fun getDataFromWebServer(before: Boolean) {
         viewModelScope.launch(Dispatchers.IO){
             val recentNews = apiMethods.getRecentNews()
             if (recentNews != null) {
-                loadedAmount = recentNews.size
-                if (recentNews.size < AMOUNT_TO_LOAD) {
-                    allEarliestLoaded = false
-                }
-                if (news.value == null) {
-                    _news.postValue(Pair(newsObservableID + 1, recentNews))
+                if (before) {
+                    loadedAmount = recentNews.size
+                    if (allNews.isNotEmpty()) {
+                        allNews.clear()
+                    }
+                    allNews.addAll(recentNews)
+
+                    _news.postValue(Pair(ObservableMessage(), recentNews.subList(0, AMOUNT_TO_LOAD)))
                 } else {
-                    val newList = mutableListOf<NewsItem?>()
-                    newList.addAll(news.value!!.second)
-                    newList.addAll(recentNews)
-                    _news.postValue(Pair(newsObservableID + 1, newList))
+                    val tempList = appendMostRecentToItemsList(recentNews, allNews)
+                    _news.postValue(Pair(ObservableMessage(false, true), tempList))
                 }
+
             } else {
-                _error.postValue(Pair(errorObservableID + 1, MESSAGE_SERVER_SIDE_ERROR))
+                _error.postValue(Pair(ObservableMessage(), MESSAGE_SERVER_SIDE_ERROR))
             }
         }
+    }
+
+    fun updateNewsList(fetchFromIndex: Int) {
+        val end: Int
+        if (allNews.subList(fetchFromIndex, allNews.size-1).size < AMOUNT_TO_LOAD) {
+            end = allNews.size
+            allEarliestLoaded = true
+        } else {
+            end = fetchFromIndex + AMOUNT_TO_LOAD
+        }
+        _news.value = Pair(ObservableMessage(false, true), allNews.subList(fetchFromIndex, end))
+
     }
 
     fun getDataFromDB() {
@@ -81,19 +93,15 @@ class NewsFeedViewModel: ViewModel() {
             val list: List<NewsItem?>? = databaseMethods.getDataFromDatabase(dataID, NewsItem::class.java)
             if (!list.isNullOrEmpty()) {
                 loadedAmount = list.size
-                val pair = Pair(newsObservableID + 1, list.toMutableList())
+                val pair = Pair(ObservableMessage(), list.toMutableList().subList(0, 21))
                 _news.postValue(pair)
-
-            } else {
-                if (appContext.checkNetwork() == 0) {
-                    _error.postValue(Pair(errorObservableID + 1, MESSAGE_NO_CONNECTION))
-                }
+                allNews.addAll(list.toMutableList())
             }
         }
         if (appContext.checkNetwork() != 0) {
-            getDataFromWebServer(Date(), false)
+            getDataFromWebServer(true)
         } else {
-            _error.postValue(Pair(errorObservableID + 1, MESSAGE_NO_CONNECTION))
+            _error.postValue(Pair(ObservableMessage(), MESSAGE_NO_CONNECTION))
         }
     }
 
@@ -101,6 +109,25 @@ class NewsFeedViewModel: ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             databaseMethods.submitDataToDatabase(NewsItem::class.java, mutableList, List::class.java, dataID)
         }
+    }
+
+    fun appendMostRecentToItemsList(itemsToAppend: List<NewsItem>?, all: MutableList<NewsItem?>): MutableList<NewsItem> {
+        var count = 0
+        val tempList = mutableListOf<NewsItem>()
+        if (itemsToAppend!!.isNotEmpty()) {
+            itemsToAppend.forEach {
+                if (it != all[0] && it.publishedAt.after(all[0]!!.publishedAt)) {
+                    System.out.println(it.publishedAt.after(all[0]!!.publishedAt))
+                    tempList.add(count, it)
+                    count++
+                } else {
+                    return@forEach
+                }
+            }
+            all.addAll(0, tempList)
+        }
+        return tempList
+
     }
 
 }

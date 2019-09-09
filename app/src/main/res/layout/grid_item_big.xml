@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
     <data>
         <import type="android.view.View"/>
-        <variable name="item" type="com.bonial.newsapp.model.NewsItem" />
+        <variable name="item" type="com.bonial.newsapp.model.NewsItemViewData" />
     </data>
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/wrapper_big_card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
         app:cardUseCompatPadding="true"
         app:cardElevation="3dp"
         app:cardCornerRadius="8dp">
@@ -20,8 +22,9 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/image_vert"
-                android:background="@color/colorAccent"
+                android:id="@+id/item_image"
+                android:contentDescription="@string/image_content_descriptor"
+                android:background="@color/colorPrimary"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"/>
 
@@ -33,7 +36,7 @@
 
                 <TextView
                     android:id="@+id/title_text_view"
-                    android:text="@{item.title}"
+                    android:text="@{item.shortTitle}"
                     android:textStyle="bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -42,7 +45,7 @@
 
                 <TextView
                     android:id="@+id/content_text_view"
-                    android:text="@{item.description}"
+                    android:text="@{item.shortContent}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@+id/title_text_view"
@@ -50,7 +53,7 @@
 
                 <TextView
                     android:id="@+id/provider_name_text_view"
-                    android:text="@{item.author}"
+                    android:text="@{item.shortSource}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -58,7 +61,7 @@
 
                 <TextView
                     android:id="@+id/posted_time_view"
-                    android:text="@{item.publishedAt.toString()}"
+                    android:text="@{item.posted}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toTopOf="parent"

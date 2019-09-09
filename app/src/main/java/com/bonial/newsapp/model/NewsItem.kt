@@ -1,27 +1,69 @@
 package com.bonial.newsapp.model
 
+import android.content.res.Resources
+import com.bonial.newsapp.R
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 data class NewsItem (val publishedAt: Date, val title: String, val description: String,
-                     val urlToImage: String? = null, val author: String, val content: String, val url: String) {
+                     val urlToImage: String? = null, val author: String, val content: String, val url: String, val source: Source)
 
-    //TODO
+data class NewsItemViewData (val item: NewsItem, val resources: Resources) {
+
+    val shortDescription: String
+        get() {
+            return if (item.description.length <= 20) {
+                item.description
+            } else {
+                item.description.substring(0, 17).plus("...")
+            }
+        }
+
+    val shortTitle: String
+        get() {
+            return if (item.title.length <= 30) {
+                item.title
+            } else {
+                item.title.substring(0, 27).plus("...")
+            }
+        }
+
+    val shortContent: String
+        get() {
+            return if (item.content.length <= 80) {
+                item.content
+            } else {
+                item.content.substring(0, 77).plus("...")
+            }
+        }
+
+    val shortSource: String
+        get() {
+            return if (item.source.name.length <= 10) {
+                resources.getString(R.string.from).plus(item.source.name)
+            } else {
+                resources.getString(R.string.from).plus(item.source.name.substring(0, 7).plus("..."))
+            }
+        }
+
     val posted: String
-    get() {
-        return (Date().time - publishedAt.time).toString().plus(" hours")
-    }
+        get() {
+            val millisec = Date().time - item.publishedAt.time
+            return TimeUnit.MILLISECONDS.toHours(millisec).toString().substringBefore(".").
+                plus(" ").plus(resources.getString(R.string.hours_ago))
+        }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
-        other as NewsItem
-        if (title != other.title) return false
+        other as NewsItemViewData
+        if (item.title != other.item.title) return false
         return true
     }
 
     override fun hashCode(): Int {
-        var result = title.hashCode()
-        result = 31 * result + publishedAt.hashCode()
+        var result = item.title.hashCode()
+        result = 31 * result + item.publishedAt.hashCode()
         return result
     }
 }

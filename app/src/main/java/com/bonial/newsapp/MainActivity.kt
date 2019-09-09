@@ -29,9 +29,4 @@ class MainActivity : AppCompatActivity() {
         component.inject(this)
         subComponent.inject(viewModel)
     }
-
-    override fun onStart() {
-        super.onStart()
-        viewModel.getDataFromDB()
-    }
 }
