@@ -21,8 +21,8 @@ import kotlinx.android.synthetic.main.fragment_news_feed.*
 class NewsFeedFragment : Fragment() {
 
     private var viewModel: NewsFeedViewModel? = null
-    var adapter: GridViewAdapter? = null
-    var recentRequested = false
+    private var adapter: GridViewAdapter? = null
+    private var recentRequested = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,12 +36,14 @@ class NewsFeedFragment : Fragment() {
             if (swipe_refresh_layout != null && swipe_refresh_layout.isRefreshing) {
                 swipe_refresh_layout.isRefreshing = false
             }
+            if (progress_bar.visibility == View.VISIBLE) {
+                progress_bar.visibility = View.GONE
+            }
 
             if (!it.first.alreadyReceived) {
                 it.first.alreadyReceived = true
 
                 if (!recentRequested) {
-                    System.out.println("previous requested: "+ it.second.size)
                     val tempList = mutableListOf<NewsItemViewData?>()
                     viewModel!!.news.value!!.second.forEach {
                         tempList.add(NewsItemViewData(it!!, context!!.resources))
@@ -75,7 +77,6 @@ class NewsFeedFragment : Fragment() {
                 } else {
                     // add on the top
                     if (viewModel!!.news.value!!.second.isNotEmpty()) {
-                        System.out.println("recent requested: "+ it.second.size)
                         viewModel!!.news.value!!.second.asReversed().forEach {
                             adapter!!.items.add(0, NewsItemViewData(it!!, context!!.resources))
                             adapter!!.notifyItemInserted(0)
@@ -88,8 +89,6 @@ class NewsFeedFragment : Fragment() {
                 }
                 viewModel!!.updateDatabase(viewModel!!.allNews)
 
-            } else {
-                System.out.println("already handled!!!!!!!!!!")
             }
         })
 
@@ -110,6 +109,7 @@ class NewsFeedFragment : Fragment() {
 
         if (viewModel!!.news.value == null) {
             viewModel!!.getDataFromDB()
+            progress_bar.visibility = View.VISIBLE
         }
     }
 
@@ -122,6 +122,10 @@ class NewsFeedFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val layoutManager: GridLayoutManager
+
+        //https://stackoverflow.com/questions/30889066/recycleviews-span-size - configuring recycler view
+        //with GridLayoutManager
+
         if (activity!!.getOrientation() == NewsFeedViewModel.PORTRAIT_MODE) {
             layoutManager = GridLayoutManager(activity, 2)
             layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
@@ -147,9 +151,8 @@ class NewsFeedFragment : Fragment() {
         }
 
         news_grid_view.layoutManager = layoutManager
-        if (viewModel!!.allNews.isNotEmpty()) {
 
-            System.out.println("loading existing")
+        if (viewModel!!.allNews.isNotEmpty()) {
             val tempList = mutableListOf<NewsItemViewData?>()
             viewModel!!.allNews.forEach{
                 tempList.add(NewsItemViewData(it!!, context!!.resources))
@@ -167,7 +170,7 @@ class NewsFeedFragment : Fragment() {
         }
     }
 
-    fun goToItemFragment() {
+    private fun goToItemFragment() {
         val navController = Navigation.findNavController(activity!!, R.id.nav_host_fragment)
         navController.navigate(R.id.feed_fr_to_item_fr)
     }

@@ -5,16 +5,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import com.bonial.newsapp.database.AppDatabase
 import com.bonial.newsapp.di.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: NewsFeedViewModel
-    lateinit var navController: NavController
-    lateinit var navHostFragment: NavHostFragment
+    private lateinit var navController: NavController
+    private lateinit var navHostFragment: NavHostFragment
 
-    //TODO later replace with ApplicationContext!!!!
-    private var component: AppComponent = DaggerAppComponent.builder().appModule(AppModule(this)).build()
+    private var component: AppComponent = DaggerAppComponent.builder().appModule(AppModule(App.getApplicationContext())).build()
     private var subComponent: ViewModelSubComponent = component.addComponent(ViewModelModule())
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,5 +28,10 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProviders.of(this).get(NewsFeedViewModel::class.java)
         component.inject(this)
         subComponent.inject(viewModel)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        AppDatabase.destroyDatabase()
     }
 }

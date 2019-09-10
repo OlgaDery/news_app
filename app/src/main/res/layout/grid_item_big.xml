@@ -13,8 +13,8 @@
         android:clickable="true"
         android:focusable="true"
         app:cardUseCompatPadding="true"
-        app:cardElevation="3dp"
-        app:cardCornerRadius="8dp">
+        app:cardElevation="@dimen/card_elevation"
+        app:cardCornerRadius="@dimen/card_corner_radius">
 
         <LinearLayout
             android:orientation="vertical"
@@ -32,7 +32,7 @@
                 android:id="@+id/text_data_layout"
                 android:layout_width="match_parent"
                 android:layout_height="120dp"
-                android:padding="10dp">
+                android:padding="@dimen/margin_10">
 
                 <TextView
                     android:id="@+id/title_text_view"

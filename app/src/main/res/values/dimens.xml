@@ -1,0 +1,10 @@
+<resources>
+    <dimen name="card_elevation">3dp</dimen>
+    <dimen name="card_corner_radius">8dp</dimen>
+    <dimen name="padding_15">15dp</dimen>
+    <dimen name="margin_10">10dp</dimen>
+    <dimen name="text_16">16sp</dimen>
+    <dimen name="text_20">20sp</dimen>
+    <dimen name="text_12">12sp</dimen>
+
+</resources>
