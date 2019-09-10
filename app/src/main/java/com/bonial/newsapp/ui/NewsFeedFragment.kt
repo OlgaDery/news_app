@@ -36,10 +36,6 @@ class NewsFeedFragment : Fragment() {
             if (swipe_refresh_layout != null && swipe_refresh_layout.isRefreshing) {
                 swipe_refresh_layout.isRefreshing = false
             }
-            if (progress_bar.visibility == View.VISIBLE) {
-                progress_bar.visibility = View.GONE
-            }
-
             if (!it.first.alreadyReceived) {
                 it.first.alreadyReceived = true
 
@@ -109,7 +105,6 @@ class NewsFeedFragment : Fragment() {
 
         if (viewModel!!.news.value == null) {
             viewModel!!.getDataFromDB()
-            progress_bar.visibility = View.VISIBLE
         }
     }
 
