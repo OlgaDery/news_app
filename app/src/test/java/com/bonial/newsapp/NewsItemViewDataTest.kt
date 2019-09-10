@@ -21,7 +21,7 @@ class NewsItemViewDataTest: BaseUnitTest() {
 
     @Test
     fun checkGeneratedValues() {
-        val titleValue = "Adcdef"
+        val titleValue = "Adcdefaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
         //20
         val descriptValue = "Adcdefaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
         //80
@@ -30,10 +30,13 @@ class NewsItemViewDataTest: BaseUnitTest() {
 
         val newsItem = NewsItemViewData(NewsItem("2019-09-09T23:28:00Z", titleValue, descriptValue,
             author, contentValue, "url", "url"), mockResources)
-        newsItem.item.source = Source("abc", "abc")
+        newsItem.item.source = Source("abc", "abcabcdfgfgllllljjk")
 
         Assert.assertTrue(newsItem.posted.contains("hours ago"))
         Assert.assertTrue(newsItem.shortSource.contains("From"))
+        Assert.assertTrue(newsItem.shortSource.length < 15)
+        Assert.assertTrue(newsItem.shortDescription.length < 17)
+        Assert.assertTrue(newsItem.shortTitle.length < 17)
         Assert.assertTrue(newsItem.shortContent.length <= 80)
 
     }

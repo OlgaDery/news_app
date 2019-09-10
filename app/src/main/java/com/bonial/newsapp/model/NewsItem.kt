@@ -42,19 +42,19 @@ data class NewsItemViewData (val item: NewsItem, val resources: Resources) {
             if (item.description == null) {
                 return ""
             }
-            return if (item.description.length <= 20) {
+            return if (item.description.length < 17) {
                 item.description
             } else {
-                item.description.substring(0, 17).plus("...")
+                item.description.substring(0, 13).plus("...")
             }
         }
 
     val shortTitle: String
         get() {
-            return if (item.title.length <= 20) {
+            return if (item.title.length < 17) {
                 item.title
             } else {
-                item.title.substring(0, 17).plus("...")
+                item.title.substring(0, 13).plus("...")
             }
         }
 
@@ -72,7 +72,7 @@ data class NewsItemViewData (val item: NewsItem, val resources: Resources) {
 
     val shortSource: String
         get() {
-            if (item.source != null || item.source?.name == null) {
+            if (item.source == null || item.source?.name == null) {
                 return ""
             }
             return if (item.source!!.name!!.length <= 10) {
