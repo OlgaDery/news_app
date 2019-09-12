@@ -1,6 +1,7 @@
 package com.bonial.newsapp
 
 import android.content.Context
+import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -47,6 +48,12 @@ class NewsFeedViewModel: ViewModel() {
     var allEarliestLoaded = false
     private var loadedAmount = 0
 
+    val dataLoaded: ObservableBoolean = object : ObservableBoolean() {
+        override fun get(): Boolean {
+            return allNews.isNotEmpty()
+        }
+    }
+
     fun getDataFromWebServer(before: Boolean) {
         viewModelScope.launch(Dispatchers.IO){
             val recentNews = apiMethods.getRecentNews()
@@ -55,6 +62,10 @@ class NewsFeedViewModel: ViewModel() {
                     loadedAmount = recentNews.size
                     if (allNews.isNotEmpty()) {
                         allNews.clear()
+                    } else {
+                        if (!dataLoaded.get()) {
+                            dataLoaded.set(true)
+                        }
                     }
                     allNews.addAll(recentNews)
 
@@ -92,6 +103,7 @@ class NewsFeedViewModel: ViewModel() {
                 val pair = Pair(ObservableMessage(), list.toMutableList().subList(0, 21))
                 _news.postValue(pair)
                 allNews.addAll(list.toMutableList())
+                dataLoaded.set(true)
             }
         }
         if (appContext.checkNetwork() != 0) {

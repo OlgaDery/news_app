@@ -30,7 +30,8 @@ class SingleItemFragmentTest {
     @Before
     fun setUp() {
         activity = activityRule.activity
-        onView(withId(R.id.news_grid_view))
+        Thread.sleep(1000)
+        onView(withId(R.id.news_recycler_view))
             .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(1))
             .perform(ViewActions.click())
     }

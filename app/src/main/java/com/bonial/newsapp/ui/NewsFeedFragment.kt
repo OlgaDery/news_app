@@ -6,6 +6,7 @@ import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -13,6 +14,7 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bonial.newsapp.NewsFeedViewModel
 import com.bonial.newsapp.R
+import com.bonial.newsapp.databinding.FragmentNewsFeedBinding
 import com.bonial.newsapp.getOrientation
 import com.bonial.newsapp.model.NewsItemViewData
 import com.bonial.newsapp.showToast
@@ -23,6 +25,7 @@ class NewsFeedFragment : Fragment() {
     private var viewModel: NewsFeedViewModel? = null
     private var adapter: GridViewAdapter? = null
     private var recentRequested = false
+    private lateinit var binding: FragmentNewsFeedBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,9 +44,13 @@ class NewsFeedFragment : Fragment() {
 
                 if (!recentRequested) {
                     val tempList = mutableListOf<NewsItemViewData?>()
-                    viewModel!!.news.value!!.second.forEach {
-                        tempList.add(NewsItemViewData(it!!, context!!.resources))
+
+                    if (viewModel!!.news.value!!.second.isNotEmpty()) {
+                        viewModel!!.news.value!!.second.forEach { newsItem ->
+                            tempList.add(NewsItemViewData(newsItem!!, context!!.resources))
+                        }
                     }
+
                     if (!it.first.appendingData) {
                         adapter?.items!!.clear()
                         adapter?.loadItems(tempList)
@@ -55,8 +62,8 @@ class NewsFeedFragment : Fragment() {
                             start = adapter!!.itemCount
                         }
                         val end = it.second.size
-                        tempList.forEach {
-                            adapter!!.items.add(it)
+                        tempList.forEach { newsItemViewData ->
+                            adapter!!.items.add(newsItemViewData)
                         }
                         val handler = Handler()
                         Thread(Runnable {
@@ -73,8 +80,8 @@ class NewsFeedFragment : Fragment() {
                 } else {
                     // add on the top
                     if (viewModel!!.news.value!!.second.isNotEmpty()) {
-                        viewModel!!.news.value!!.second.asReversed().forEach {
-                            adapter!!.items.add(0, NewsItemViewData(it!!, context!!.resources))
+                        viewModel!!.news.value!!.second.asReversed().forEach { newsItem ->
+                            adapter!!.items.add(0, NewsItemViewData(newsItem!!, context!!.resources))
                             adapter!!.notifyItemInserted(0)
                         }
                     } else {
@@ -102,22 +109,25 @@ class NewsFeedFragment : Fragment() {
                }
             }
         })
-
-        if (viewModel!!.news.value == null) {
-            viewModel!!.getDataFromDB()
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_news_feed, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_news_feed, container, false)
+        binding.lifecycleOwner = activity
+        binding.viewModel = viewModel
+        return binding.root
+        //return inflater.inflate(R.layout.fragment_news_feed, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val layoutManager: GridLayoutManager
+        if (viewModel!!.news.value == null) {
+            viewModel!!.getDataFromDB()
+        }
 
+        val layoutManager: GridLayoutManager
         //https://stackoverflow.com/questions/30889066/recycleviews-span-size - configuring recycler view
         //with GridLayoutManager
 
@@ -145,7 +155,7 @@ class NewsFeedFragment : Fragment() {
             }
         }
 
-        news_grid_view.layoutManager = layoutManager
+        news_recycler_view.layoutManager = layoutManager
 
         if (viewModel!!.allNews.isNotEmpty()) {
             val tempList = mutableListOf<NewsItemViewData?>()
@@ -156,7 +166,7 @@ class NewsFeedFragment : Fragment() {
         } else {
             adapter?.loadItems(mutableListOf())
         }
-        news_grid_view.adapter = adapter
+        news_recycler_view.adapter = adapter
 
         swipe_refresh_layout.setOnRefreshListener {
             recentRequested = true

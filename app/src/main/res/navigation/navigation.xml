@@ -8,12 +8,11 @@
     <fragment
         android:id="@+id/feed_fragment"
         android:name="com.bonial.newsapp.ui.NewsFeedFragment"
-        android:label="fragment_loader"
+        android:label="fragment_feed"
         tools:layout="@layout/fragment_news_feed" >
         <action
             android:id="@+id/feed_fr_to_item_fr"
             app:destination="@+id/item_fragment"/>
-
     </fragment>
 
     <fragment
