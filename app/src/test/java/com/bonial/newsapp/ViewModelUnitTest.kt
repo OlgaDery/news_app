@@ -1,15 +1,16 @@
 package com.bonial.newsapp
 
 import com.bonial.newsapp.model.NewsItem
-import org.junit.Test
-
-import org.junit.Assert.*
+import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Test
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ViewModelUnitTest {
+class ViewModelUnitTest: BaseUnitTest() {
+
     private lateinit var viewModel: NewsFeedViewModel
+
     private val allItems = mutableListOf<NewsItem?>()
     private val newItems = mutableListOf<NewsItem>()
 
