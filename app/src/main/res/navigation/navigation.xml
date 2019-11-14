@@ -8,18 +8,17 @@
     <fragment
         android:id="@+id/feed_fragment"
         android:name="com.bonial.newsapp.ui.NewsFeedFragment"
-        android:label="fragment_loader"
+        android:label="fragment_feed"
         tools:layout="@layout/fragment_news_feed" >
         <action
             android:id="@+id/feed_fr_to_item_fr"
             app:destination="@+id/item_fragment"/>
-
     </fragment>
 
     <fragment
         android:id="@+id/item_fragment"
         android:name="com.bonial.newsapp.ui.SingleItemFragment"
-        android:label="fragment_map"
+        android:label="fragment_item"
         tools:layout="@layout/fragment_single_item" >
     </fragment>
 

@@ -2,8 +2,9 @@ package com.bonial.newsapp.database
 
 import android.content.Context
 import androidx.room.*
+import com.bonial.newsapp.model.NewsItem
 
-@Database(entities = [DataToSave::class], version = 1, exportSchema = false)
+@Database(entities = [NewsItem::class], version = 1, exportSchema = false)
 abstract class AppDatabase: RoomDatabase() {
 
     abstract fun daoActions(): DaoActions
@@ -24,20 +25,17 @@ abstract class AppDatabase: RoomDatabase() {
             INSTANCE = null
         }
     }
-
-//    override fun clearAllTables() {
-//    }
 }
-
-@Entity(tableName = "table")
-data class DataToSave(@PrimaryKey var key: String, @ColumnInfo(name = "value") var value: String)
 
 @Dao
 interface DaoActions {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(data: DataToSave)
+    fun insert(data: List<NewsItem?>?)
 
-    @Query("SELECT * FROM `table` WHERE [key] = :key")
-    fun get(key: String): DataToSave?
+    @Query("SELECT * FROM `table`")
+    fun getAll(): List<NewsItem?>?
+
+    @Query("DELETE FROM `table`")
+    fun deleteAll()
 
 }

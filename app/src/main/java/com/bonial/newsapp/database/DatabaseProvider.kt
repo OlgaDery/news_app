@@ -1,11 +1,11 @@
 package com.bonial.newsapp.database
 
-import java.lang.reflect.Type
+import com.bonial.newsapp.model.NewsItem
 
 interface DatabaseProvider {
 
-    suspend fun <T> getDataFromDatabase(key: String, type: Type): List<T?>?
+    suspend fun getDataFromDatabase(): List<NewsItem?>?
 
-    suspend fun <T> submitDataToDatabase(type: Type, value: T?, collectionType: Type?, key: String): Boolean
+    suspend fun submitDataToDatabase(data: MutableList<NewsItem?>?): Boolean
 
 }

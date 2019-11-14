@@ -1,0 +1,15 @@
+https://newsapi.org/v2/top-headlines?country=us&apiKey=API_KEY
+
+{
+-"source": {
+"id": null,
+"name": "Tmz.com"
+},
+"author": "TMZ Staff",
+"title": "Kevin Hart Suffers Major Injuries in Car Accident, Roof Crushed - TMZ",
+"description": "Kevin Hart suffers major back injury when his car veered off the road in nasty accident.",
+"url": "https://www.tmz.com/2019/09/01/kevin-hart-car-accident-malibu-off-road-passengers-trapped/",
+"urlToImage": "https://imagez.tmz.com/image/b3/16by9/2019/09/01/b3f3fa0f952b4fcea535116cdd1f43bf_xl.jpg",
+"publishedAt": "2019-09-01T18:31:00Z",
+"content": "One of Kevin Hart's classic cars ended up in a ditch in the Malibu Hills after veering off the road ... TMZ has learned, and looking at the damage ... it's a miracle he and 2 other people in the vehicle survived.\r\nThe accident happened just before 1 AM Sunday… [+1185 chars]"
+},

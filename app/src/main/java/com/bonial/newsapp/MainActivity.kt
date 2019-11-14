@@ -5,17 +5,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import com.bonial.newsapp.database.AppDatabase
 import com.bonial.newsapp.di.*
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: NewsFeedViewModel
-    lateinit var navController: NavController
-    lateinit var navHostFragment: NavHostFragment
+    private lateinit var navController: NavController
+    private lateinit var navHostFragment: NavHostFragment
 
-    //TODO initializing component and subcomponent for Dagger DI
-    private var component: AppComponent = DaggerAppComponent.builder().appModule(AppModule(this)).build()
+    private var component: AppComponent = DaggerAppComponent.builder().appModule(AppModule(App.getApplicationContext())).build()
     private var subComponent: ViewModelSubComponent = component.addComponent(ViewModelModule())
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,8 +30,8 @@ class MainActivity : AppCompatActivity() {
         subComponent.inject(viewModel)
     }
 
-    override fun onStart() {
-        super.onStart()
-        viewModel.getDataFromDB()
+    override fun onDestroy() {
+        super.onDestroy()
+        AppDatabase.destroyDatabase()
     }
 }
